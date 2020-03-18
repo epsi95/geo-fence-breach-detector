@@ -11,7 +11,29 @@ class GeoFenceDetectorPolygon:
         self.pointList = pointList
         self.observer = observer
 
-    def isInsideGeoFence(self):
+
+    def isInsideGeoFenceWithObserver(self, observer): # user can check geo-fence breach for specific observer
+        crossingNumber = 0
+        fromPoint = self.pointList[0]
+        for point in self.pointList[1:]:
+            if(self.isEdgeHorizontal(fromPoint, point)):
+                # do nothing because edhe is horizontal to x axis
+                # update the from point and go to next
+                fromPoint = point
+            else:
+                if(self.hasRightSideRayIntersection(Edge(fromPoint, point), observer)):
+                    crossingNumber += 1
+                    fromPoint = point
+                else:
+                    fromPoint = point
+
+        if(crossingNumber % 2 == 0):
+            return False
+        else:
+            return True
+
+
+    def isInsideGeoFence(self): # here observer is static, once class is initialized can not be changed
         crossingNumber = 0
         fromPoint = self.pointList[0]
         for point in self.pointList[1:]:
